@@ -1,0 +1,12 @@
+{
+  "name": "finapi",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/lucas54neves/finapi.git",
+  "author": "Lucas Neves <lucas54neves@outlook.com>",
+  "license": "MIT",
+  "scripts": {},
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
