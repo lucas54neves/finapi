@@ -10,10 +10,10 @@ app.use(cors())
 
 app.use(express.json())
 
-function verifyIfExistsAccountWithCPF(request, response, next) {
-  const { cpf } = request.headers
+function verifyIfExistsAccountWithTaxpayerId(request, response, next) {
+  const { taxpayerId } = request.headers
 
-  const customer = customers.find(customer => customer.cpf === cpf)
+  const customer = customers.find(customer => customer.taxpayerId === taxpayerId)
 
   if (!customer) {
     return response.status(400).json({ error: { message:"Customer not found" }})
@@ -29,10 +29,10 @@ app.get("/", (request, response) => {
 })
 
 app.post("/account", (request, response) => {
-  const { cpf, name } = request.body
+  const { taxpayerId, name } = request.body
 
   const customerAlreadyExists = customers.some(
-    customer => customer.cpf === cpf
+    customer => customer.taxpayerId === taxpayerId
   )
 
   if (customerAlreadyExists) {
@@ -42,7 +42,7 @@ app.post("/account", (request, response) => {
   const id = uuidv4()
 
   customers.push({
-    cpf,
+    taxpayerId,
     name,
     id,
     statement: []
@@ -51,7 +51,7 @@ app.post("/account", (request, response) => {
   return response.status(201).send()
 })
 
-app.get("/statement", verifyIfExistsAccountWithCPF, (request, response) => {
+app.get("/statement", verifyIfExistsAccountWithTaxpayerId, (request, response) => {
   const { customer } = request
   
   return response.json(customer.statement)
