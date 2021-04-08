@@ -123,6 +123,16 @@ app.get('/statement/date', verifyIfExistsAccountWithTaxpayerId, (request, respon
   return response.json(statement)
 })
 
+app.put('account', verifyIfExistsAccountWithTaxpayerId, (request, response) => {
+  const { customer } = request
+
+  const { name } = request.body
+
+  customer.name = name
+
+  return response.status(201).send()
+})
+
 app.listen(process.env.PORT || 3333, () => {
   console.log('Server started on port 3333')
 })
