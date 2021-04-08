@@ -1,6 +1,6 @@
 const express = require('express')
 const { v4: uuidv4 } = require('uuid')
-const cors = require("cors")
+const cors = require('cors')
 
 const app = express()
 
@@ -10,25 +10,51 @@ app.use(cors())
 
 app.use(express.json())
 
-app.get("/", (request, response) => {
-  return response.json({ message: "FinAPI" })
+function verifyIfExistsAccountWithTaxpayerId(request, response, next) {
+  const taxpayerId = request.header('Taxpayer-Id')
+
+  const customer = customers.find(customer => customer.taxpayerId === taxpayerId)
+
+  if (!customer) {
+    return response.status(400).json({ error: { message: 'Customer not found' }})
+  }
+
+  request.customer = customer
+
+  return next()
+}
+
+function getBalance(statement) {
+  const balance = statement.reduce((accumulator, operation) => {
+    if (operation.type === 'credit') {
+      return accumulator + operation.amount
+    } else {
+      return accumulator - operation.amount
+    }
+  }, 0)
+
+  return balance
+}
+
+app.get('/', (request, response) => {
+  return response.json({ message: 'FinAPI' })
 })
 
-app.post("/account", (request, response) => {
-  const { cpf, name } = request.body
+app.post('/account', (request, response) => {
+  const { taxpayerId, name } = request.body
 
   const customerAlreadyExists = customers.some(
-    customer => customer.cpf === cpf
+    customer => customer.taxpayerId === taxpayerId
   )
 
   if (customerAlreadyExists) {
-    return response.status(400).json({ error: "Customer already exists!" })
+    return response.status(400).json({ error: 'Customer already exists!' })
   }
 
   const id = uuidv4()
 
   customers.push({
-    cpf,
+    taxpayerId,
     name,
     id,
     statement: []
@@ -37,16 +63,98 @@ app.post("/account", (request, response) => {
   return response.status(201).send()
 })
 
-app.get("/statement/:cpf", (request, response) => {
-  const { cpf } = request.params
-
-  const customer = customers.find(customer => customer.cpf === cpf)
-
-  if (!customer) {
-    return response.status(400).json({ error: { message:"Customer not found" }})
-  }
+app.get('/statement', verifyIfExistsAccountWithTaxpayerId, (request, response) => {
+  const { customer } = request
   
   return response.json(customer.statement)
+})
+
+app.post('/deposit', verifyIfExistsAccountWithTaxpayerId, (request, response) => {
+  const { description, amount } = request.body
+
+  const { customer } = request
+
+  const statementOperation = {
+    description,
+    amount,
+    createAt: new Date(),
+    type: 'credit'
+  }
+
+  customer.statement.push(statementOperation)
+
+  return response.status(201).send()
+})
+
+app.post('/withdraw', verifyIfExistsAccountWithTaxpayerId, (request, response) => {
+  const { amount } = request.body
+  
+  const { customer } = request
+
+  const balance = getBalance(customer.statement)
+
+  if (balance < amount) {
+    return response.status(400).json({ error: {
+      message: 'Insufficient funds'
+    }})
+  }
+
+  const statementOperation = {
+    description: 'Withdraw',
+    amount,
+    createdAt: new Date(),
+    type: 'debit'
+  }
+
+  customer.statement.push(statementOperation)
+
+  return response.status(201).send()
+})
+
+app.get('/statement/date', verifyIfExistsAccountWithTaxpayerId, (request, response) => {
+  const { customer } = request
+
+  const { date } = request.query
+
+  const dateFormat = new Date(date + ' 00:00')
+
+  const statement = customer.statement.filter(statement => statement.createAt === new Date(dateFormat).toDateString())
+
+  return response.json(statement)
+})
+
+app.put('/account', verifyIfExistsAccountWithTaxpayerId, (request, response) => {
+  const { customer } = request
+
+  const { name } = request.body
+
+  customer.name = name
+
+  return response.status(201).send()
+})
+
+app.get('/account', verifyIfExistsAccountWithTaxpayerId, (request, response) => {
+  const { customer } = request
+
+  return response.json(customer)
+})
+
+app.delete('/account', verifyIfExistsAccountWithTaxpayerId, (request, response) => {
+  const { customer } = request
+
+  customers.splice(customer, 1)
+
+  return response.status(200).json(customers)
+})
+
+app.get('/balance', verifyIfExistsAccountWithTaxpayerId, (request, response) => {
+  const { customer } = request
+
+  const balance = getBalance(customer.statement)
+
+  return response.json({
+    balance
+  })
 })
 
 app.listen(process.env.PORT || 3333, () => {
