@@ -147,6 +147,16 @@ app.delete('/account', verifyIfExistsAccountWithTaxpayerId, (request, response) 
   return response.status(200).json(customers)
 })
 
+app.get('/balance', verifyIfExistsAccountWithTaxpayerId, (request, response) => {
+  const { customer } = request
+
+  const balance = getBalance(customer.statement)
+
+  return response.json({
+    balance
+  })
+})
+
 app.listen(process.env.PORT || 3333, () => {
   console.log('Server started on port 3333')
 })
