@@ -139,6 +139,14 @@ app.get('/account', verifyIfExistsAccountWithTaxpayerId, (request, response) => 
   return response.json(customer)
 })
 
+app.delete('/account', verifyIfExistsAccountWithTaxpayerId, (request, response) => {
+  const { customer } = request
+
+  customers.splice(customer, 1)
+
+  return response.status(200).json(customers)
+})
+
 app.listen(process.env.PORT || 3333, () => {
   console.log('Server started on port 3333')
 })
