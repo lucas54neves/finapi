@@ -6,7 +6,8 @@
   "author": "Lucas Neves <lucas54neves@outlook.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon --legacy-watch src/index.js"
+    "dev": "nodemon --legacy-watch src/index.js",
+    "start": "node src/index.js"
   },
   "dependencies": {
     "express": "^4.17.1",
