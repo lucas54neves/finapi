@@ -111,6 +111,18 @@ app.post('/withdraw', verifyIfExistsAccountWithTaxpayerId, (request, response) =
   return response.status(201).send()
 })
 
+app.get('/statement/date', verifyIfExistsAccountWithTaxpayerId, (request, response) => {
+  const { customer } = request
+
+  const { date } = request.query
+
+  const dateFormat = new Date(date + ' 00:00')
+
+  const statement = customer.statement.filter(statement => statement.createAt === new Date(dateFormat).toDateString())
+
+  return response.json(statement)
+})
+
 app.listen(process.env.PORT || 3333, () => {
   console.log('Server started on port 3333')
 })
