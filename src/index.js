@@ -123,7 +123,7 @@ app.get('/statement/date', verifyIfExistsAccountWithTaxpayerId, (request, respon
   return response.json(statement)
 })
 
-app.put('account', verifyIfExistsAccountWithTaxpayerId, (request, response) => {
+app.put('/account', verifyIfExistsAccountWithTaxpayerId, (request, response) => {
   const { customer } = request
 
   const { name } = request.body
@@ -131,6 +131,12 @@ app.put('account', verifyIfExistsAccountWithTaxpayerId, (request, response) => {
   customer.name = name
 
   return response.status(201).send()
+})
+
+app.get('/account', verifyIfExistsAccountWithTaxpayerId, (request, response) => {
+  const { customer } = request
+
+  return response.json(customer)
 })
 
 app.listen(process.env.PORT || 3333, () => {
