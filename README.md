@@ -36,7 +36,7 @@
 - [ ] Deve existir subdiretórios dentro do diretório dos services para os arquivos relacionados a um mesmo domínio
 - [x] Deve existir um diretório para os middlewares
 - [x] Deve existir um diretório para os dtos (Data Transfer Objects)
-- [ ] Deve existir um diretório para as funções utilizadas com frequência no projeto (utils)
+- [x] Deve existir um diretório para as funções utilizadas com frequência no projeto (utils)
 - [ ] Deve se utilizar o Typeorm como banco de dados
 
 ### Requisitos funcionais
