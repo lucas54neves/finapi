@@ -31,7 +31,7 @@
 - [x] Deve se realizar o deploy automático de todas as alterações commitadas na branch main
 - [x] Deve se realizar o deploy no Heroku
 - [ ] Deve se utilizar o Typescript como linguagem de programação
-- [ ] Deve existir um diretório para as rotas
+- [x] Deve existir um diretório para as rotas
 - [ ] Deve existir um diretório para os services
 - [ ] Deve existir subdiretórios dentro do diretório dos services para os arquivos relacionados a um mesmo domínio
 - [x] Deve existir um diretório para os middlewares
