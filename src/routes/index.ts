@@ -9,7 +9,10 @@ import withdrawsRouter from './withdraw.routes'
 const routes = Router()
 
 routes.get('/', (request: Request, response: Response) => {
-  return response.json({ message: 'FinAPI' })
+  return response.json({
+    message: 'FinAPI',
+    repository: 'https://github.com/lucas54neves/finapi.git'
+  })
 })
 
 routes.use('/account', accountsRouter)
