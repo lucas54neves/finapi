@@ -138,7 +138,7 @@ app.get(
     const dateFormat = new Date(date + " 00:00");
 
     const statement = customer.statement.filter(
-      (statement) => statement.createAt === new Date(dateFormat).toDateString()
+      (element) => element.createAt === new Date(dateFormat).toDateString()
     );
 
     return response.json(statement);
